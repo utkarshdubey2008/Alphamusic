@@ -16,15 +16,26 @@ import os
 # Load environment variables
 load_dotenv()
 
-# MongoDB URI from .env
+# Debug: check if MONGO_DB_URI is loaded
 MONGO_DB_URI = os.getenv("MONGO_DB_URI")
 if not MONGO_DB_URI:
     LOGGER(__name__).error("MongoDB URI not found in environment variables, exiting...")
+    print("MongoDB URI not found. Check the .env file.")  # Added print for debugging
     exit()
+else:
+    print(f"MongoDB URI loaded: {MONGO_DB_URI}")  # Debug message to confirm it's loaded
 
 # MongoDB client initialization
 client = AsyncIOMotorClient(MONGO_DB_URI)
 db = client.get_database("your_database_name")  # Specify your database name
+
+# Test MongoDB connection
+try:
+    client.admin.command('ping')  # Test connection to MongoDB
+    LOGGER(__name__).info("Successfully connected to MongoDB.")
+except Exception as e:
+    LOGGER(__name__).error(f"Error connecting to MongoDB: {e}")
+    exit()
 
 # Database initialization function
 async def init():
@@ -53,11 +64,15 @@ async def init():
         LOGGER(__name__).error(f"Error fetching banned users: {e}")
 
     # Start the main bot and userbot
-    await app.start()
-    for all_module in ALL_MODULES:
-        importlib.import_module("AnonXMusic.plugins" + all_module)
-    
-    LOGGER("AnonXMusic.plugins").info("Successfully Imported Modules...")
+    try:
+        await app.start()
+        for all_module in ALL_MODULES:
+            importlib.import_module("AnonXMusic.plugins" + all_module)
+        LOGGER("AnonXMusic.plugins").info("Successfully Imported Modules...")
+    except Exception as e:
+        LOGGER("AnonXMusic").error(f"Error during bot startup: {e}")
+        exit()
+
     await userbot.start()
     await Anony.start()
 
