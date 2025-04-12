@@ -27,6 +27,7 @@ class Anony(Client):
         LOGGER(__name__).info(f"Attempting to send a message to chat_id: {config.LOGGER_ID}")
 
         try:
+            # Attempt to send a message to the log group/channel
             await self.send_message(
                 chat_id=config.LOGGER_ID,
                 text=f"<u><b>» {self.mention} ʙᴏᴛ sᴛᴀʀᴛᴇᴅ :</b><u>\n\nɪᴅ : <code>{self.id}</code>\nɴᴀᴍᴇ : {self.name}\nᴜsᴇʀɴᴀᴍᴇ : @{self.username}",
@@ -36,7 +37,7 @@ class Anony(Client):
             LOGGER(__name__).error(
                 "Bot has failed to access the log group/channel. Make sure that you have added your bot to your log group/channel."
             )
-            exit()
+            exit()  # Exit immediately if there's a critical error
         except Exception as ex:
             LOGGER(__name__).error(
                 f"Bot has failed to access the log group/channel.\nReason: {type(ex).__name__}, {str(ex)}"
@@ -50,7 +51,7 @@ class Anony(Client):
                 LOGGER(__name__).error(
                     "Please promote your bot as an admin in your log group/channel."
                 )
-                exit()
+                exit()  # Exit if bot is not an admin
             LOGGER(__name__).info(f"Music Bot Started as {self.name}")
         except Exception as ex:
             LOGGER(__name__).error(
